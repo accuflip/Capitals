@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuflip — US Regions & Capitals Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0D1B3E;
+  --navy2:   #162548;
+  --navy3:   #1A2F5E;
+  --gold:    #C9A84C;
+  --gold2:   #E8C96E;
+  --gold3:   #A07830;
+  --cream:   #F5F0E8;
+  --white:   #FFFFFF;
+  --ne:      #2563EB; /* Northeast - blue */
+  --south:   #B45309; /* South - amber */
+  --mw:      #15803D; /* Midwest - green */
+  --west:    #7C3AED; /* West - purple */
+  --red:     #DC2626;
+  --green:   #16A34A;
+  --sans:    'Syne', sans-serif;
+  --mono:    'DM Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: var(–navy);
+color: var(–cream);
+font-family: var(–mono);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+overflow-x: hidden;
+}
+
+/* ── Header ── */
+header {
+background: var(–navy);
+border-bottom: 2px solid var(–gold3);
+padding: 10px 20px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-shrink: 0;
+position: relative;
+z-index: 10;
+}
+.logo {
+font-family: var(–sans);
+font-size: 1.5rem;
+font-weight: 800;
+color: var(–gold);
+letter-spacing: -0.03em;
+line-height: 1;
+}
+.logo span { color: var(–cream); font-weight: 600; font-size: 0.85rem; display: block; letter-spacing: 0.05em; }
+.header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Mode buttons */
+.mode-btn {
+background: var(–navy2);
+border: 1.5px solid var(–gold3);
+color: var(–gold);
+font-family: var(–mono);
+font-size: 0.68rem;
+padding: 6px 12px;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.15s;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+font-weight: 500;
+}
+.mode-btn:hover { background: var(–navy3); border-color: var(–gold); }
+.mode-btn.active {
+background: var(–gold);
+color: var(–navy);
+border-color: var(–gold);
+font-weight: 700;
+}
+.reset-btn {
+background: transparent;
+border: 1.5px solid var(–navy3);
+color: var(–cream);
+opacity: 0.6;
+}
+.reset-btn:hover { opacity: 1; border-color: var(–cream); }
+
+/* ── Main layout ── */
+.main {
+display: flex;
+flex: 1;
+min-height: 0;
+gap: 0;
+}
+
+/* ── Left sidebar ── */
+.sidebar {
+width: 220px;
+flex-shrink: 0;
+background: var(–navy2);
+border-right: 1px solid var(–gold3);
+display: flex;
+flex-direction: column;
+padding: 0;
+overflow-y: auto;
+}
+
+.panel {
+padding: 14px 14px 10px;
+border-bottom: 1px solid rgba(201,168,76,0.2);
+}
+.panel-title {
+font-family: var(–sans);
+font-size: 0.62rem;
+text-transform: uppercase;
+letter-spacing: 0.14em;
+color: var(–gold);
+margin-bottom: 8px;
+font-weight: 600;
+}
+
+/* State card */
+.state-name {
+font-family: var(–sans);
+font-size: 1.15rem;
+font-weight: 800;
+color: var(–gold2);
+line-height: 1.2;
+margin-bottom: 2px;
+min-height: 1.4em;
+}
+.state-capital {
+font-size: 0.82rem;
+color: var(–cream);
+margin-bottom: 2px;
+}
+.state-capital span { color: var(–gold); font-weight: 500; }
+.state-region {
+display: inline-block;
+padding: 2px 8px;
+border-radius: 10px;
+font-size: 0.62rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+margin-top: 4px;
+color: white;
+}
+.state-fun-fact {
+font-size: 0.68rem;
+color: rgba(245,240,232,0.7);
+margin-top: 6px;
+line-height: 1.5;
+font-style: italic;
+}
+.state-video-btn {
+display: block;
+margin-top: 10px;
+background: rgba(201,168,76,0.1);
+border: 1px solid rgba(201,168,76,0.4);
+border-radius: 7px;
+padding: 7px 10px;
+color: var(–gold);
+font-family: var(–mono);
+font-size: 0.68rem;
+text-decoration: none;
+text-align: center;
+transition: all 0.15s;
+letter-spacing: 0.02em;
+}
+.state-video-btn:hover {
+background: rgba(201,168,76,0.2);
+border-color: var(–gold2);
+color: var(–gold2);
+}
+
+/* Score */
+.score-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 6px;
+}
+.score-box {
+background: var(–navy);
+border-radius: 6px;
+padding: 8px 6px 6px;
+text-align: center;
+}
+.score-box .val {
+font-family: var(–sans);
+font-size: 1.5rem;
+font-weight: 800;
+color: var(–gold);
+line-height: 1;
+}
+.score-box .lbl {
+font-size: 0.58rem;
+color: rgba(245,240,232,0.55);
+text-transform: uppercase;
+letter-spacing: 0.1em;
+margin-top: 2px;
+}
+
+/* Streak */
+.streak-bar {
+background: var(–navy);
+border-radius: 6px;
+padding: 8px 10px;
+display: flex;
+align-items: center;
+gap: 8px;
+margin-top: 6px;
+}
+.streak-fire { font-size: 1.2rem; }
+.streak-count {
+font-family: var(–sans);
+font-size: 1.1rem;
+font-weight: 800;
+color: var(–gold);
+}
+.streak-lbl { font-size: 0.65rem; color: rgba(245,240,232,0.55); }
+
+/* Quiz prompt */
+.quiz-prompt {
+background: var(–navy);
+border: 1px solid var(–gold3);
+border-radius: 8px;
+padding: 10px 12px;
+font-size: 0.75rem;
+line-height: 1.55;
+color: var(–cream);
+}
+.quiz-prompt .cue {
+font-size: 0.6rem;
+color: var(–gold);
+text-transform: uppercase;
+letter-spacing: 0.1em;
+margin-bottom: 5px;
+}
+.quiz-prompt .q-text {
+font-size: 0.88rem;
+color: var(–gold2);
+font-family: var(–sans);
+font-weight: 700;
+line-height: 1.3;
+margin-bottom: 4px;
+}
+
+/* Region legend + filter pills */
+.legend-item {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 3px 0;
+font-size: 0.7rem;
+color: var(–cream);
+}
+.legend-dot {
+width: 12px; height: 12px;
+border-radius: 3px;
+flex-shrink: 0;
+}
+
+/* Region filter toggle pills */
+.filter-pills {
+display: flex;
+flex-direction: column;
+gap: 5px;
+margin-top: 6px;
+}
+.filter-pill {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 5px 9px;
+border-radius: 7px;
+border: 1.5px solid transparent;
+cursor: pointer;
+transition: all 0.15s;
+font-family: var(–mono);
+font-size: 0.7rem;
+font-weight: 500;
+color: rgba(245,240,232,0.55);
+background: transparent;
+text-align: left;
+width: 100%;
+user-select: none;
+}
+.filter-pill .pill-dot {
+width: 10px; height: 10px;
+border-radius: 2px;
+flex-shrink: 0;
+opacity: 0.45;
+transition: opacity 0.15s;
+}
+.filter-pill .pill-count {
+margin-left: auto;
+font-size: 0.6rem;
+opacity: 0.4;
+transition: opacity 0.15s;
+}
+.filter-pill.active {
+color: var(–cream);
+border-color: rgba(201,168,76,0.35);
+background: rgba(255,255,255,0.04);
+}
+.filter-pill.active .pill-dot { opacity: 1; }
+.filter-pill.active .pill-count { opacity: 0.7; }
+.filter-pill:hover { background: rgba(255,255,255,0.06); color: var(–cream); }
+.filter-pill.zoomed-in {
+background: rgba(201,168,76,0.12);
+border-color: var(–gold);
+color: var(–gold2);
+}
+.filter-pill.zoomed-in::after {
+content: ’ 🔍’;
+font-size: 0.65rem;
+}
+
+.filter-all-btn {
+width: 100%;
+margin-top: 6px;
+padding: 5px 9px;
+background: transparent;
+border: 1px dashed rgba(201,168,76,0.3);
+border-radius: 6px;
+color: rgba(245,240,232,0.4);
+font-family: var(–mono);
+font-size: 0.65rem;
+cursor: pointer;
+transition: all 0.15s;
+text-align: center;
+}
+.filter-all-btn:hover { border-color: var(–gold); color: var(–gold); }
+.filter-all-btn.all-active { border-color: var(–gold); color: var(–gold); background: rgba(201,168,76,0.07); }
+
+/* Feedback toast */
+.feedback-toast {
+position: fixed;
+top: 70px;
+left: 50%;
+transform: translateX(-50%) translateY(-20px);
+background: var(–navy2);
+border: 2px solid var(–gold);
+border-radius: 10px;
+padding: 10px 24px;
+font-family: var(–sans);
+font-size: 1rem;
+font-weight: 700;
+color: var(–gold);
+z-index: 999;
+opacity: 0;
+pointer-events: none;
+transition: all 0.2s;
+white-space: nowrap;
+}
+.feedback-toast.show {
+opacity: 1;
+transform: translateX(-50%) translateY(0);
+}
+.feedback-toast.correct { border-color: var(–green); color: var(–green); }
+.feedback-toast.wrong { border-color: var(–red); color: var(–red); }
+
+/* Silhouette overlay */
+.silhouette-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(13,27,62,0.97);
+z-index: 200;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+.silhouette-overlay.active { display: flex; }
+
+.sil-header {
+font-family: var(–sans);
+font-size: 1.1rem;
+font-weight: 800;
+color: var(–gold);
+text-align: center;
+margin-bottom: 6px;
+}
+.sil-prompt {
+font-size: 0.75rem;
+color: rgba(245,240,232,0.7);
+text-align: center;
+margin-bottom: 16px;
+}
+.sil-svg-wrap {
+background: var(–navy2);
+border: 1.5px solid var(–gold3);
+border-radius: 12px;
+padding: 10px;
+margin-bottom: 20px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+#silhouetteSvg { max-width: 340px; max-height: 280px; }
+
+.sil-options {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+width: 100%;
+max-width: 420px;
+margin-bottom: 14px;
+}
+.sil-opt {
+background: var(–navy2);
+border: 1.5px solid var(–gold3);
+border-radius: 8px;
+padding: 12px 10px;
+text-align: center;
+cursor: pointer;
+font-family: var(–mono);
+font-size: 0.8rem;
+color: var(–cream);
+transition: all 0.15s;
+}
+.sil-opt:hover { background: var(–navy3); border-color: var(–gold); color: var(–gold); }
+.sil-opt.correct { background: rgba(22,163,74,0.25); border-color: var(–green); color: var(–green); pointer-events: none; }
+.sil-opt.wrong   { background: rgba(220,38,38,0.2);  border-color: var(–red);   color: var(–red);   pointer-events: none; }
+.sil-opt.reveal  { background: rgba(22,163,74,0.15); border-color: var(–green); color: var(–green); pointer-events: none; }
+
+.sil-score {
+font-size: 0.72rem;
+color: rgba(245,240,232,0.55);
+text-align: center;
+}
+.sil-next-btn {
+display: none;
+margin-top: 10px;
+background: var(–gold);
+color: var(–navy);
+border: none;
+border-radius: 8px;
+padding: 10px 28px;
+font-family: var(–sans);
+font-size: 0.85rem;
+font-weight: 700;
+cursor: pointer;
+transition: opacity 0.15s;
+}
+.sil-next-btn:hover { opacity: 0.85; }
+
+/* ── Map area ── */
+.map-area {
+flex: 1;
+position: relative;
+display: flex;
+align-items: stretch;
+overflow: hidden;
+background: var(–navy);
+}
+
+#mapSvg {
+width: 100%;
+height: 100%;
+cursor: default;
+}
+
+.state-path {
+stroke: rgba(201,168,76,0.75);
+stroke-width: 1.4;
+transition: opacity 0.15s;
+cursor: pointer;
+}
+.state-path:hover { stroke: var(–gold); stroke-width: 2.2; opacity: 0.85; }
+.state-path.dimmed { opacity: 0.12; cursor: default; }
+.state-path.highlighted { stroke: var(–gold2); stroke-width: 2.5; filter: drop-shadow(0 0 8px rgba(201,168,76,0.7)); }
+
+/* NE=blue, South=amber, Midwest=green, West=purple */
+.region-NE    { fill: #1D4ED8; }
+.region-South { fill: #92400E; }
+.region-MW    { fill: #166534; }
+.region-West  { fill: #5B21B6; }
+
+/* State labels on map */
+.state-label {
+font-family: var(–mono);
+font-size: 8px;
+fill: rgba(255,255,255,0.85);
+font-weight: 500;
+pointer-events: none;
+text-anchor: middle;
+dominant-baseline: middle;
+}
+
+/* Tooltip */
+.map-tooltip {
+position: absolute;
+background: var(–navy2);
+border: 1px solid var(–gold);
+border-radius: 8px;
+padding: 8px 12px;
+pointer-events: none;
+opacity: 0;
+transition: opacity 0.1s;
+z-index: 50;
+font-size: 0.72rem;
+line-height: 1.6;
+max-width: 180px;
+}
+.map-tooltip.visible { opacity: 1; }
+.map-tooltip .tt-name { font-family: var(–sans); font-weight: 800; color: var(–gold); font-size: 0.9rem; }
+.map-tooltip .tt-cap  { color: var(–cream); }
+.map-tooltip .tt-reg  { color: rgba(245,240,232,0.6); font-size: 0.65rem; }
+
+/* Loading state */
+.loading-screen {
+position: absolute;
+inset: 0;
+background: var(–navy);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 100;
+}
+.loading-logo {
+font-family: var(–sans);
+font-size: 2rem;
+font-weight: 800;
+color: var(–gold);
+margin-bottom: 16px;
+letter-spacing: -0.04em;
+}
+.loading-bar-wrap {
+width: 220px;
+height: 4px;
+background: var(–navy2);
+border-radius: 2px;
+overflow: hidden;
+margin-bottom: 12px;
+}
+.loading-bar {
+height: 100%;
+background: var(–gold);
+border-radius: 2px;
+animation: loadpulse 1.4s ease-in-out infinite;
+}
+@keyframes loadpulse {
+0%   { width: 0%; }
+50%  { width: 80%; }
+100% { width: 100%; }
+}
+.loading-txt { font-size: 0.7rem; color: rgba(245,240,232,0.5); }
+
+/* Etsy CTA banner */
+.etsy-banner {
+display: none;
+position: fixed;
+bottom: 0; left: 0; right: 0;
+background: linear-gradient(90deg, var(–gold3), var(–gold), var(–gold3));
+color: var(–navy);
+text-align: center;
+padding: 10px 20px;
+z-index: 500;
+font-family: var(–sans);
+font-size: 0.85rem;
+font-weight: 700;
+letter-spacing: 0.02em;
+animation: slideUp 0.4s ease;
+}
+@keyframes slideUp {
+from { transform: translateY(100%); }
+to   { transform: translateY(0); }
+}
+.etsy-banner a { color: var(–navy); text-decoration: underline; margin-left: 12px; }
+.etsy-banner .close-btn {
+position: absolute;
+right: 14px; top: 50%;
+transform: translateY(-50%);
+background: none;
+border: none;
+font-size: 1.1rem;
+cursor: pointer;
+color: var(–navy);
+opacity: 0.7;
+}
+
+/* Win overlay */
+.win-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(13,27,62,0.96);
+z-index: 300;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center;
+padding: 30px 20px;
+}
+.win-overlay.active { display: flex; }
+.win-trophy { font-size: 3.5rem; margin-bottom: 10px; animation: bounce 0.6s ease; }
+@keyframes bounce {
+0% { transform: scale(0.5); } 70% { transform: scale(1.15); } 100% { transform: scale(1); }
+}
+.win-title {
+font-family: var(–sans);
+font-size: 2rem;
+font-weight: 800;
+color: var(–gold);
+margin-bottom: 6px;
+}
+.win-stats { font-size: 0.85rem; color: var(–cream); margin-bottom: 20px; line-height: 2; }
+.win-stars { font-size: 2rem; margin-bottom: 16px; }
+.win-etsy {
+background: var(–gold);
+color: var(–navy);
+border: none;
+border-radius: 10px;
+padding: 12px 28px;
+font-family: var(–sans);
+font-size: 0.9rem;
+font-weight: 800;
+cursor: pointer;
+margin-bottom: 10px;
+letter-spacing: 0.02em;
+transition: opacity 0.15s;
+}
+.win-etsy:hover { opacity: 0.88; }
+.win-play-again {
+background: transparent;
+border: 1.5px solid var(–gold3);
+color: var(–cream);
+border-radius: 10px;
+padding: 10px 24px;
+font-family: var(–mono);
+font-size: 0.78rem;
+cursor: pointer;
+transition: all 0.15s;
+}
+.win-play-again:hover { border-color: var(–cream); }
+
+@media (max-width: 640px) {
+.sidebar { width: 180px; }
+.logo { font-size: 1.1rem; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- Header -->
+
+<header>
+  <div class="logo">
+    Accuflip
+    <span>US Regions &amp; Capitals Adventure</span>
+  </div>
+  <div class="header-right">
+    <button class="mode-btn active" id="btn-explorer"  onclick="setMode('explorer')">🗺 Explorer</button>
+    <button class="mode-btn"        id="btn-quiz"      onclick="setMode('quiz')">🎯 Capital Quiz</button>
+    <button class="mode-btn"        id="btn-silhouette" onclick="setMode('silhouette')">👁 Silhouette</button>
+    <button class="mode-btn reset-btn" onclick="resetGame()">↺ Reset</button>
+  </div>
+</header>
+
+<!-- Feedback toast -->
+
+<div class="feedback-toast" id="toast"></div>
+
+<!-- Main layout -->
+
+<div class="main">
+
+  <!-- Sidebar -->
+
+  <div class="sidebar">
+
+```
+<!-- State Card -->
+<div class="panel">
+  <div class="panel-title">📍 State Info</div>
+  <div class="state-name" id="cardName">Click a state</div>
+  <div class="state-capital" id="cardCapital"><span>Capital:</span> —</div>
+  <div id="cardRegionBadge" class="state-region" style="background:#333;">—</div>
+  <div class="state-fun-fact" id="cardFact"></div>
+  <a class="state-video-btn" id="cardVideo" href="#" target="_blank" rel="noopener" style="display:none">
+    🌐 Official Tourism Website
+  </a>
+</div>
+
+<!-- Quiz Prompt -->
+<div class="panel" id="quizPanel" style="display:none">
+  <div class="panel-title">❓ Quiz</div>
+  <div class="quiz-prompt">
+    <div class="cue" id="quizCue">Round 1</div>
+    <div class="q-text" id="quizQuestion">—</div>
+    <div id="quizInstruction" style="font-size:0.68rem;color:rgba(245,240,232,0.6)"></div>
+  </div>
+</div>
+
+<!-- Score -->
+<div class="panel">
+  <div class="panel-title">🏆 Score</div>
+  <div class="score-grid">
+    <div class="score-box"><div class="val" id="scoreCorrect">0</div><div class="lbl">Correct</div></div>
+    <div class="score-box"><div class="val" id="scoreWrong">0</div><div class="lbl">Wrong</div></div>
+  </div>
+  <div class="streak-bar">
+    <div class="streak-fire">🔥</div>
+    <div>
+      <div class="streak-count" id="streakCount">0</div>
+      <div class="streak-lbl">streak</div>
+    </div>
+  </div>
+</div>
+
+<!-- Region Filter -->
+<div class="panel">
+  <div class="panel-title">🔍 Zoom to Region</div>
+  <div class="filter-pills" id="filterPills">
+    <button class="filter-pill active" data-region="Northeast" onclick="toggleRegion('Northeast')">
+      <div class="pill-dot" style="background:#1D4ED8"></div>
+      Northeast
+      <span class="pill-count">9</span>
+    </button>
+    <button class="filter-pill active" data-region="South" onclick="toggleRegion('South')">
+      <div class="pill-dot" style="background:#92400E"></div>
+      South
+      <span class="pill-count">16</span>
+    </button>
+    <button class="filter-pill active" data-region="Midwest" onclick="toggleRegion('Midwest')">
+      <div class="pill-dot" style="background:#166534"></div>
+      Midwest
+      <span class="pill-count">12</span>
+    </button>
+    <button class="filter-pill active" data-region="West" onclick="toggleRegion('West')">
+      <div class="pill-dot" style="background:#5B21B6"></div>
+      West
+      <span class="pill-count">13</span>
+    </button>
+  </div>
+  <button class="filter-all-btn all-active" id="filterAllBtn" onclick="toggleAllRegions()">All regions selected</button>
+</div>
+```
+
+  </div><!-- /sidebar -->
+
+  <!-- Map -->
+
+  <div class="map-area" id="mapArea">
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-logo">Accuflip</div>
+      <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+      <div class="loading-txt">Loading US map data…</div>
+    </div>
+    <div class="map-tooltip" id="tooltip"></div>
+    <svg id="mapSvg"></svg>
+  </div>
+
+</div><!-- /main -->
+
+<!-- Silhouette Overlay -->
+
+<div class="silhouette-overlay" id="silhouetteOverlay">
+  <div class="sil-header">👁 Expert Silhouette — Round <span id="silRound">1</span></div>
+  <div class="sil-prompt">What state has this shape? Pick the correct state name.</div>
+  <div class="sil-svg-wrap">
+    <svg id="silhouetteSvg" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;max-width:340px;max-height:280px"></svg>
+  </div>
+  <div class="sil-options" id="silOptions"></div>
+  <div class="sil-score">Score: <span id="silCorrect">0</span> / <span id="silTotal">0</span> &nbsp;|&nbsp; Streak: <span id="silStreak">0</span></div>
+  <button class="sil-next-btn" id="silNextBtn" onclick="silhouetteNext()">Next State →</button>
+</div>
+
+<!-- Win Overlay -->
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-trophy">🏆</div>
+  <div class="win-title">You're a Capitals Expert!</div>
+  <div class="win-stars" id="winStars">⭐⭐⭐</div>
+  <div class="win-stats" id="winStats"></div>
+  <button class="win-etsy" onclick="window.open('https://www.etsy.com/shop/AccuFlipDigital','_blank')">
+    🛍 Get More Accuflip Games on Etsy
+  </button>
+  <button class="win-play-again" onclick="resetGame()">Play Again</button>
+</div>
+
+<!-- Etsy Banner -->
+
+<div class="etsy-banner" id="etsyBanner">
+  🎉 Love Accuflip? Get all our educational games!
+  <a href="https://www.etsy.com/shop/AccuFlipDigital" target="_blank">Visit AccuFlipDigital on Etsy →</a>
+  <button class="close-btn" onclick="document.getElementById('etsyBanner').style.display='none'">✕</button>
+</div>
+
+<!-- D3 + TopoJSON from CDN -->
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+
+<script>
+'use strict';
+
+// ── State Data ────────────────────────────────────────────────────────────────
+const STATE_DATA = {
+  "01": { name:"Alabama",        capital:"Montgomery",     region:"South",     abbr:"AL", fact:"Home to the US Space & Rocket Center in Huntsville.", yt:"https://alabama.travel" },
+  "02": { name:"Alaska",         capital:"Juneau",         region:"West",      abbr:"AK", fact:"Larger than Texas, California & Montana combined!", yt:"https://www.travelalaska.com" },
+  "04": { name:"Arizona",        capital:"Phoenix",        region:"West",      abbr:"AZ", fact:"Has more golf courses per capita than any other US state.", yt:"https://www.visitarizona.com" },
+  "05": { name:"Arkansas",       capital:"Little Rock",    region:"South",     abbr:"AR", fact:"The only US state that actively mines diamonds.", yt:"https://www.arkansas.com" },
+  "06": { name:"California",     capital:"Sacramento",     region:"West",      abbr:"CA", fact:"Has the 5th largest economy in the entire world.", yt:"https://www.visitcalifornia.com" },
+  "08": { name:"Colorado",       capital:"Denver",         region:"West",      abbr:"CO", fact:"Has 58 peaks over 14,000 feet — called 'fourteeners.'", yt:"https://www.colorado.com" },
+  "09": { name:"Connecticut",    capital:"Hartford",       region:"Northeast", abbr:"CT", fact:"The first US state to pass an anti-slavery law, in 1784.", yt:"https://www.ctvisit.com" },
+  "10": { name:"Delaware",       capital:"Dover",          region:"Northeast", abbr:"DE", fact:"First state to ratify the US Constitution in 1787.", yt:"https://www.visitdelaware.com" },
+  "12": { name:"Florida",        capital:"Tallahassee",    region:"South",     abbr:"FL", fact:"Has the longest coastline of the lower 48 states.", yt:"https://www.visitflorida.com" },
+  "13": { name:"Georgia",        capital:"Atlanta",        region:"South",     abbr:"GA", fact:"Produces more peanuts, pecans, and peaches than any other state.", yt:"https://www.exploregeorgia.org" },
+  "15": { name:"Hawaii",         capital:"Honolulu",       region:"West",      abbr:"HI", fact:"Only US state that grows coffee — and the only island state.", yt:"https://www.gohawaii.com" },
+  "16": { name:"Idaho",          capital:"Boise",          region:"West",      abbr:"ID", fact:"Produces one-third of all potatoes grown in the United States.", yt:"https://www.visitidaho.org" },
+  "17": { name:"Illinois",       capital:"Springfield",    region:"Midwest",   abbr:"IL", fact:"Home of Abraham Lincoln and deep dish pizza.", yt:"https://www.enjoyillinois.com" },
+  "18": { name:"Indiana",        capital:"Indianapolis",   region:"Midwest",   abbr:"IN", fact:"Hosts the world's largest single-day sporting event — the Indy 500.", yt:"https://www.visitindiana.com" },
+  "19": { name:"Iowa",           capital:"Des Moines",     region:"Midwest",   abbr:"IA", fact:"Grows enough corn each year to fill the Empire State Building 300 times.", yt:"https://www.traveliowa.com" },
+  "20": { name:"Kansas",         capital:"Topeka",         region:"Midwest",   abbr:"KS", fact:"Geographic center of the contiguous United States.", yt:"https://www.travelks.com" },
+  "21": { name:"Kentucky",       capital:"Frankfort",      region:"South",     abbr:"KY", fact:"Bluegrass State — produces 95% of the world's bourbon.", yt:"https://www.kentuckytourism.com" },
+  "22": { name:"Louisiana",      capital:"Baton Rouge",    region:"South",     abbr:"LA", fact:"Has parishes instead of counties — a French colonial legacy.", yt:"https://www.louisianatravel.com" },
+  "23": { name:"Maine",          capital:"Augusta",        region:"Northeast", abbr:"ME", fact:"Easternmost state — first place in the US to see the sunrise.", yt:"https://www.visitmaine.com" },
+  "24": { name:"Maryland",       capital:"Annapolis",      region:"Northeast", abbr:"MD", fact:"Home of the US Naval Academy, founded 1845.", yt:"https://www.visitmaryland.org" },
+  "25": { name:"Massachusetts",  capital:"Boston",         region:"Northeast", abbr:"MA", fact:"Site of the first public school and first library in America.", yt:"https://www.massvacation.com" },
+  "26": { name:"Michigan",       capital:"Lansing",        region:"Midwest",   abbr:"MI", fact:"Surrounded by 4 of the 5 Great Lakes — the Great Lakes State.", yt:"https://www.michigan.org" },
+  "27": { name:"Minnesota",      capital:"Saint Paul",     region:"Midwest",   abbr:"MN", fact:"Has more shoreline than California, Florida & Hawaii combined.", yt:"https://www.exploreminnesota.com" },
+  "28": { name:"Mississippi",    capital:"Jackson",        region:"South",     abbr:"MS", fact:"The Blues music genre was born in the Mississippi Delta.", yt:"https://www.visitmississippi.org" },
+  "29": { name:"Missouri",       capital:"Jefferson City", region:"Midwest",   abbr:"MO", fact:"Gateway Arch in St. Louis is the tallest US monument at 630 feet.", yt:"https://www.visitmo.com" },
+  "30": { name:"Montana",        capital:"Helena",         region:"West",      abbr:"MT", fact:"Has more cattle than people — about 2.5 cows per resident.", yt:"https://www.visitmt.com" },
+  "31": { name:"Nebraska",       capital:"Lincoln",        region:"Midwest",   abbr:"NE", fact:"Birthplace of Kool-Aid and home of the Cornhuskers.", yt:"https://www.visitnebraska.com" },
+  "32": { name:"Nevada",         capital:"Carson City",    region:"West",      abbr:"NV", fact:"Most of its land (87%) is owned by the federal government.", yt:"https://www.travelnevada.com" },
+  "33": { name:"New Hampshire",  capital:"Concord",        region:"Northeast", abbr:"NH", fact:"First state to declare independence from Britain in 1776.", yt:"https://www.visitnh.gov" },
+  "34": { name:"New Jersey",     capital:"Trenton",        region:"Northeast", abbr:"NJ", fact:"Most densely populated state in the US.", yt:"https://www.visitnj.org" },
+  "35": { name:"New Mexico",     capital:"Santa Fe",       region:"West",      abbr:"NM", fact:"Santa Fe is the oldest US state capital, founded in 1610.", yt:"https://www.newmexico.org" },
+  "36": { name:"New York",       capital:"Albany",         region:"Northeast", abbr:"NY", fact:"New York City speaks over 800 languages — the most on Earth.", yt:"https://www.iloveny.com" },
+  "37": { name:"North Carolina", capital:"Raleigh",        region:"South",     abbr:"NC", fact:"Site of the Wright Brothers' first successful powered flight.", yt:"https://www.visitnc.com" },
+  "38": { name:"North Dakota",   capital:"Bismarck",       region:"Midwest",   abbr:"ND", fact:"Least-visited state in the US — a hidden Great Plains gem.", yt:"https://www.ndtourism.com" },
+  "39": { name:"Ohio",           capital:"Columbus",       region:"Midwest",   abbr:"OH", fact:"Birthplace of more US presidents than any other state — 8 total.", yt:"https://www.ohio.org" },
+  "40": { name:"Oklahoma",       capital:"Oklahoma City",  region:"South",     abbr:"OK", fact:"Has more man-made lakes than any other state.", yt:"https://www.travelok.com" },
+  "41": { name:"Oregon",         capital:"Salem",          region:"West",      abbr:"OR", fact:"Crater Lake is the deepest lake in the US at 1,943 feet.", yt:"https://traveloregon.com" },
+  "42": { name:"Pennsylvania",   capital:"Harrisburg",     region:"Northeast", abbr:"PA", fact:"Philadelphia was the nation's capital from 1790-1800.", yt:"https://www.visitpa.com" },
+  "44": { name:"Rhode Island",   capital:"Providence",     region:"Northeast", abbr:"RI", fact:"Smallest state — could fit into Alaska more than 420 times.", yt:"https://www.visitrhodeisland.com" },
+  "45": { name:"South Carolina", capital:"Columbia",       region:"South",     abbr:"SC", fact:"First state to secede from the Union in 1860.", yt:"https://www.discoversouthcarolina.com" },
+  "46": { name:"South Dakota",   capital:"Pierre",         region:"Midwest",   abbr:"SD", fact:"Home of Mount Rushmore and the Crazy Horse Memorial.", yt:"https://www.travelsouthdakota.com" },
+  "47": { name:"Tennessee",      capital:"Nashville",      region:"South",     abbr:"TN", fact:"Music City — birthplace of country music and home to the Grand Ole Opry.", yt:"https://www.tnvacation.com" },
+  "48": { name:"Texas",          capital:"Austin",         region:"South",     abbr:"TX", fact:"Once an independent republic — the Republic of Texas (1836-1845).", yt:"https://www.traveltexas.com" },
+  "49": { name:"Utah",           capital:"Salt Lake City", region:"West",      abbr:"UT", fact:"Has five national parks — more than any other state except Alaska.", yt:"https://www.visitutah.com" },
+  "50": { name:"Vermont",        capital:"Montpelier",     region:"Northeast", abbr:"VT", fact:"Smallest state capital by population in the US.", yt:"https://www.vermontvacation.com" },
+  "51": { name:"Virginia",       capital:"Richmond",       region:"South",     abbr:"VA", fact:"More US presidents were born here than any other state — 8 total.", yt:"https://www.virginia.org" },
+  "53": { name:"Washington",     capital:"Olympia",        region:"West",      abbr:"WA", fact:"Named for George Washington — only state named for a president.", yt:"https://www.experiencewa.com" },
+  "54": { name:"West Virginia",  capital:"Charleston",     region:"South",     abbr:"WV", fact:"Only US state formed by breaking away from another state during the Civil War.", yt:"https://www.wvtourism.com" },
+  "55": { name:"Wisconsin",      capital:"Madison",        region:"Midwest",   abbr:"WI", fact:"America's Dairyland — produces more cheese than any other state.", yt:"https://www.travelwisconsin.com" },
+  "56": { name:"Wyoming",        capital:"Cheyenne",       region:"West",      abbr:"WY", fact:"First state to grant women the right to vote — in 1869.", yt:"https://www.travelwyoming.com" }
+}
+
+// FIPS → FIPS lookup by name (for reverse lookups)
+const nameToFips = {};
+Object.entries(STATE_DATA).forEach(([fips, d]) => { nameToFips[d.name] = fips; });
+
+const REGION_COLORS = {
+  Northeast: '#1D4ED8',
+  South:     '#92400E',
+  Midwest:   '#166534',
+  West:      '#5B21B6'
+};
+const REGION_HOVER = {
+  Northeast: '#2563EB',
+  South:     '#B45309',
+  Midwest:   '#15803D',
+  West:      '#7C3AED'
+};
+const REGION_CSS = {
+  Northeast: 'region-NE',
+  South:     'region-South',
+  Midwest:   'region-MW',
+  West:      'region-West'
+};
+
+// ── Game State ────────────────────────────────────────────────────────────────
+let mode = 'explorer';
+let score = { correct: 0, wrong: 0, streak: 0 };
+let quiz  = { target: null, round: 0 };
+let sil   = { target: null, round: 0, correct: 0, wrong: 0, streak: 0 };
+let pathGenerator, svgEl, stateGeometries;
+let usedInQuiz = new Set();
+let activeRegions = new Set(['Northeast','South','Midwest','West']); // filter state
+
+// ── Region bounding boxes in AlbersUSA 975×610 space ─────────────────────────
+// Computed from Census geometry — padded generously for comfortable zoom
+const REGION_BOUNDS = {
+  Northeast: { x: 760, y: 120, w: 215, h: 230 },  // tight NE cluster
+  South:     { x: 390, y: 370, w: 420, h: 240 },
+  Midwest:   { x: 390, y: 175, w: 330, h: 260 },
+  West:      { x:  20, y:  50, w: 440, h: 480 },
+};
+
+let zoomedRegion = null;  // currently zoomed region name, or null = full view
+
+// ── Zoom to a region (or zoom back out if clicking the same one) ──────────────
+function toggleRegion(region) {
+  if (zoomedRegion === region) {
+    // Already zoomed in — click again to zoom back out
+    zoomOut();
+  } else {
+    zoomToRegion(region);
+  }
+}
+
+function zoomToRegion(region) {
+  zoomedRegion = region;
+  updateFilterUI();
+
+  // Update quiz/silhouette pool
+  activeRegions = new Set([region]);
+  if (mode === 'quiz')      { usedInQuiz.clear(); nextQuizQuestion(); }
+  if (mode === 'silhouette'){ silhouetteNext(); }
+
+  const b = REGION_BOUNDS[region];
+  if (!b || !svgEl) return;
+
+  const pad   = 18;
+  const svgW  = 975, svgH = 610;
+  const scaleX = svgW / (b.w + pad * 2);
+  const scaleY = svgH / (b.h + pad * 2);
+  const scale  = Math.min(scaleX, scaleY);
+  const tx = -(b.x - pad) * scale + (svgW - (b.w + pad*2) * scale) / 2;
+  const ty = -(b.y - pad) * scale + (svgH - (b.h + pad*2) * scale) / 2;
+
+  // Animate the zoom-layer transform
+  svgEl.select('#zoom-layer')
+    .transition().duration(600).ease(d3.easeCubicInOut)
+    .attr('transform', `translate(${tx},${ty}) scale(${scale})`);
+
+  // Scale up labels so they stay legible
+  svgEl.selectAll('.state-label')
+    .transition().duration(600)
+    .attr('font-size', `${8 / scale}px`);
+
+  // Scale stroke widths to stay visually consistent
+  svgEl.selectAll('.state-path')
+    .transition().duration(600)
+    .style('stroke-width', `${0.6 / scale}px`);
+
+  applyRegionFilter();
+}
+
+function zoomOut() {
+  zoomedRegion = null;
+  activeRegions = new Set(['Northeast','South','Midwest','West']);
+  updateFilterUI();
+  if (mode === 'quiz')      { usedInQuiz.clear(); nextQuizQuestion(); }
+  if (mode === 'silhouette'){ silhouetteNext(); }
+
+  svgEl.select('#zoom-layer')
+    .transition().duration(500).ease(d3.easeCubicInOut)
+    .attr('transform', 'translate(0,0) scale(1)');
+
+  svgEl.selectAll('.state-label')
+    .transition().duration(500)
+    .attr('font-size', '8px');
+
+  svgEl.selectAll('.state-path')
+    .transition().duration(500)
+    .style('stroke-width', '0.6px');
+
+  applyRegionFilter();
+}
+
+function toggleAllRegions() {
+  if (zoomedRegion) {
+    zoomOut();
+  }
+}
+
+function updateFilterUI() {
+  const allActive = !zoomedRegion;
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    const r = btn.dataset.region;
+    const isZoomed = r === zoomedRegion;
+    btn.classList.toggle('active', allActive || isZoomed);
+    btn.classList.toggle('zoomed-in', isZoomed);
+  });
+  const allBtn = document.getElementById('filterAllBtn');
+  if (allActive) {
+    allBtn.textContent = '🌎 All regions — full map';
+    allBtn.classList.add('all-active');
+  } else {
+    allBtn.textContent = `← Back to full map`;
+    allBtn.classList.remove('all-active');
+  }
+}
+
+function applyRegionFilter() {
+  if (!stateGeometries) return;
+  const calloutFips = ['44','09','10'];
+  stateGeometries.forEach(d => {
+    const sd = STATE_DATA[d.id];
+    if (!sd) return;
+    const path = document.getElementById(`state-${d.id}`);
+    if (!path) return;
+    const inFilter = activeRegions.has(sd.region);
+    path.style.opacity = inFilter ? '' : '0.1';
+    path.style.cursor  = inFilter ? 'pointer' : 'default';
+    const lbl = document.getElementById(`lbl-${d.id}`);
+    if (lbl) lbl.style.opacity = inFilter ? '' : '0';
+    // Also hide/show callout leader parts for tiny states
+    if (calloutFips.includes(d.id)) {
+      ['dot','line','bg'].forEach(part => {
+        const el = document.getElementById(`lbl-${part}-${d.id}`);
+        if (el) el.style.opacity = inFilter ? '' : '0';
+      });
+    }
+  });
+}
+
+// Returns FIPS keys filtered to active regions
+function getFilteredFips() {
+  return Object.keys(STATE_DATA).filter(fips => activeRegions.has(STATE_DATA[fips].region));
+}
+
+// ── Load Map ──────────────────────────────────────────────────────────────────
+async function initMap() {
+  const us = await d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json');
+  
+  // Use the pre-projected AlbersUSA topology (975×610 viewport)
+  const states = topojson.feature(us, us.objects.states);
+  stateGeometries = states.features;
+
+  // Filter to only 50 states (exclude territories: 60,66,69,72,74,78)
+  const territories = new Set(['60','66','69','72','74','78']);
+  stateGeometries = stateGeometries.filter(f => !territories.has(f.id) && STATE_DATA[f.id]);
+
+  const mapArea = document.getElementById('mapArea');
+  svgEl = d3.select('#mapSvg');
+
+  // AlbersUSA projection — fits 975×610
+  const projection = d3.geoAlbersUsa()
+    .scale(1300)
+    .translate([487.5, 305]);
+
+  pathGenerator = d3.geoPath().projection(projection);
+
+  function drawMap() {
+    const W = mapArea.clientWidth;
+    const H = mapArea.clientHeight;
+
+    svgEl.attr('viewBox', `0 0 975 610`)
+         .attr('preserveAspectRatio', 'xMidYMid meet')
+         .attr('width', W)
+         .attr('height', H);
+
+    // Remove old paths
+    svgEl.selectAll('g.zoom-layer').remove();
+
+    const zoomG = svgEl.append('g').attr('class', 'zoom-layer').attr('id', 'zoom-layer');
+    const g  = zoomG.append('g').attr('class', 'states-group');
+    const lg = zoomG.append('g').attr('class', 'labels-group');
+
+    // Restore zoom transform if we're zoomed in
+    if (zoomedRegion && REGION_BOUNDS[zoomedRegion]) {
+      const b = REGION_BOUNDS[zoomedRegion];
+      const pad = 18, svgW = 975, svgH = 610;
+      const scale = Math.min(svgW / (b.w + pad*2), svgH / (b.h + pad*2));
+      const tx = -(b.x - pad)*scale + (svgW - (b.w + pad*2)*scale)/2;
+      const ty = -(b.y - pad)*scale + (svgH - (b.h + pad*2)*scale)/2;
+      zoomG.attr('transform', `translate(${tx},${ty}) scale(${scale})`);
+    }
+
+    // Draw states
+    g.selectAll('path.state-path')
+      .data(stateGeometries)
+      .join('path')
+        .attr('class', d => `state-path ${REGION_CSS[STATE_DATA[d.id]?.region] || ''}`)
+        .attr('id', d => `state-${d.id}`)
+        .attr('d', pathGenerator)
+        .on('click', (event, d) => handleStateClick(event, d))
+        .on('mousemove', (event, d) => showTooltip(event, d))
+        .on('mouseleave', hideTooltip);
+
+    // Callout leader config for tiny NE states: [fips, labelDx, labelDy]
+    // Offset from centroid in SVG units — push label out to the right
+    const calloutStates = {
+      '44': { dx: 52, dy: -18, abbr: 'RI' },  // Rhode Island
+      '09': { dx: 48, dy:  14, abbr: 'CT' },  // Connecticut
+      '10': { dx: 52, dy:  28, abbr: 'DE' },  // Delaware
+    };
+
+    // Draw abbreviation labels (centroid-based)
+    const skipLabel = new Set(['09','10','44']); // handled separately as callouts
+    stateGeometries.forEach(d => {
+      const sd = STATE_DATA[d.id];
+      if (!sd) return;
+      const centroid = pathGenerator.centroid(d);
+      if (!centroid || isNaN(centroid[0])) return;
+
+      if (skipLabel.has(d.id)) return; // drawn below as callouts
+
+      lg.append('text')
+        .attr('class', 'state-label')
+        .attr('id', `lbl-${d.id}`)
+        .attr('x', centroid[0])
+        .attr('y', centroid[1])
+        .attr('pointer-events', 'none')
+        .text(sd.abbr);
+    });
+
+    // Draw callout leaders for RI, CT, DE
+    Object.entries(calloutStates).forEach(([fips, cfg]) => {
+      const feat = stateGeometries.find(f => f.id === fips);
+      if (!feat) return;
+      const centroid = pathGenerator.centroid(feat);
+      if (!centroid || isNaN(centroid[0])) return;
+
+      const lx = centroid[0] + cfg.dx;
+      const ly = centroid[1] + cfg.dy;
+
+      // Leader line: dot on state → label
+      lg.append('circle')
+        .attr('cx', centroid[0])
+        .attr('cy', centroid[1])
+        .attr('r', 2.2)
+        .attr('fill', 'rgba(232,201,110,0.9)')
+        .attr('pointer-events', 'none')
+        .attr('id', `lbl-dot-${fips}`);
+
+      lg.append('line')
+        .attr('x1', centroid[0])
+        .attr('y1', centroid[1])
+        .attr('x2', lx - 4)
+        .attr('y2', ly)
+        .attr('stroke', 'rgba(232,201,110,0.55)')
+        .attr('stroke-width', 0.9)
+        .attr('pointer-events', 'none')
+        .attr('id', `lbl-line-${fips}`);
+
+      // Label background pill
+      lg.append('rect')
+        .attr('x', lx - 2)
+        .attr('y', ly - 7)
+        .attr('width', 20)
+        .attr('height', 11)
+        .attr('rx', 3)
+        .attr('fill', 'rgba(13,27,62,0.82)')
+        .attr('pointer-events', 'none')
+        .attr('id', `lbl-bg-${fips}`);
+
+      lg.append('text')
+        .attr('class', 'state-label')
+        .attr('id', `lbl-${fips}`)
+        .attr('x', lx + 8)
+        .attr('y', ly + 1)
+        .attr('font-size', '8.5px')
+        .attr('font-weight', '700')
+        .attr('fill', 'rgba(232,201,110,1)')
+        .attr('pointer-events', 'none')
+        .text(cfg.abbr);
+    });
+  }
+
+  drawMap();
+  window.addEventListener('resize', () => { drawMap(); applyRegionFilter(); });
+
+  // Hide loading screen
+  document.getElementById('loadingScreen').style.display = 'none';
+
+  // Apply any pre-set filter
+  applyRegionFilter();
+}
+
+// ── State Click Handler ───────────────────────────────────────────────────────
+function handleStateClick(event, d) {
+  const sd = STATE_DATA[d.id];
+  if (!sd) return;
+  if (!activeRegions.has(sd.region)) return; // ignore dimmed states
+
+  if (mode === 'explorer') {
+    explorerClick(sd, d.id);
+  } else if (mode === 'quiz') {
+    quizClick(sd, d.id);
+  }
+}
+
+// ── Explorer Mode ─────────────────────────────────────────────────────────────
+function explorerClick(sd, fips) {
+  updateStateCard(sd);
+
+  // Pulse highlight
+  const path = document.getElementById(`state-${fips}`);
+  if (path) {
+    path.classList.add('highlighted');
+    setTimeout(() => path.classList.remove('highlighted'), 800);
+  }
+}
+
+function updateStateCard(sd) {
+  document.getElementById('cardName').textContent = sd.name;
+  document.getElementById('cardCapital').innerHTML = `<span>Capital:</span> ${sd.capital}`;
+  document.getElementById('cardFact').textContent = sd.fact || '';
+
+  const badge = document.getElementById('cardRegionBadge');
+  badge.textContent = sd.region;
+  badge.style.background = REGION_COLORS[sd.region] || '#333';
+
+  const videoBtn = document.getElementById('cardVideo');
+  if (sd.yt) {
+    videoBtn.href = sd.yt;
+    videoBtn.style.display = 'block';
+  } else {
+    videoBtn.style.display = 'none';
+  }
+}
+
+// ── Quiz Mode ─────────────────────────────────────────────────────────────────
+function startQuiz() {
+  document.getElementById('quizPanel').style.display = 'block';
+  nextQuizQuestion();
+}
+
+function nextQuizQuestion() {
+  const pool = getFilteredFips();
+  if (pool.length === 0) {
+    document.getElementById('quizCue').textContent = 'No states selected';
+    document.getElementById('quizQuestion').textContent = '—';
+    document.getElementById('quizInstruction').textContent = 'Enable at least one region →';
+    return;
+  }
+
+  // Pick a random state from filtered pool, avoid recent repeats
+  let candidate, attempts = 0;
+  do {
+    candidate = pool[Math.floor(Math.random() * pool.length)];
+    attempts++;
+  } while (usedInQuiz.has(candidate) && attempts < pool.length * 2);
+
+  if (usedInQuiz.size >= Math.max(pool.length - 1, 1)) usedInQuiz.clear();
+  usedInQuiz.add(candidate);
+
+  quiz.target = candidate;
+  quiz.round++;
+
+  const sd = STATE_DATA[candidate];
+  const regionTag = activeRegions.size < 4 ? ` · ${sd.region}` : '';
+  document.getElementById('quizCue').textContent = `Round ${quiz.round}${regionTag}`;
+  document.getElementById('quizQuestion').textContent = sd.capital;
+  document.getElementById('quizInstruction').textContent = `Find this state on the map →`;
+
+  restoreStateColors();
+}
+
+function quizClick(sd, fips) {
+  if (!quiz.target) return;
+
+  const correct = (fips === quiz.target);
+  const correctSd = STATE_DATA[quiz.target];
+
+  if (correct) {
+    score.correct++;
+    score.streak++;
+    updateScore();
+    showToast(`✅ ${sd.name}! Capital: ${sd.capital}`, 'correct');
+    flashState(fips, '#16A34A');
+
+    // Check win condition
+    if (score.correct >= 15 && score.correct % 5 === 0) {
+      setTimeout(showWin, 1200);
+      return;
+    }
+    setTimeout(nextQuizQuestion, 900);
+  } else {
+    score.wrong++;
+    score.streak = 0;
+    updateScore();
+    showToast(`❌ That's ${sd.name}. Try: ${correctSd.name}`, 'wrong');
+    flashState(fips, '#DC2626');
+    flashState(quiz.target, '#C9A84C');
+    setTimeout(() => {
+      restoreStateColors();
+      nextQuizQuestion();
+    }, 1600);
+  }
+}
+
+function flashState(fips, color) {
+  const path = document.getElementById(`state-${fips}`);
+  if (!path) return;
+  const orig = path.style.fill;
+  path.style.fill = color;
+  path.style.transition = 'fill 0s';
+  setTimeout(() => {
+    path.style.fill = '';
+    path.style.transition = 'fill 0.5s';
+  }, 700);
+}
+
+function restoreStateColors() {
+  stateGeometries && stateGeometries.forEach(d => {
+    const path = document.getElementById(`state-${d.id}`);
+    if (path) {
+      path.style.fill = '';
+      path.classList.remove('dimmed', 'highlighted');
+    }
+  });
+  // Re-apply region dim
+  applyRegionFilter();
+}
+
+// ── Silhouette Mode ───────────────────────────────────────────────────────────
+function startSilhouette() {
+  document.getElementById('silhouetteOverlay').classList.add('active');
+  silhouetteNext();
+}
+
+function silhouetteNext() {
+  document.getElementById('silNextBtn').style.display = 'none';
+
+  const pool = getFilteredFips();
+  if (pool.length < 2) {
+    document.querySelector('.sil-header').textContent = 'Select more regions to play!';
+    return;
+  }
+
+  // Pick random target from filtered pool
+  const targetFips = pool[Math.floor(Math.random() * pool.length)];
+  sil.target = targetFips;
+  sil.round++;
+  document.getElementById('silRound').textContent = sil.round;
+
+  const targetSd = STATE_DATA[targetFips];
+  const targetFeature = stateGeometries.find(f => f.id === targetFips);
+  if (!targetFeature) return silhouetteNext();
+
+  // Draw isolated silhouette.
+  // pathGenerator already has the correct AlbersUSA projection applied — it's what draws
+  // the main map correctly in 975×610 space. So we:
+  //   1. Use pathGenerator(feature) to get the correct SVG path string
+  //   2. Use pathGenerator.bounds(feature) to get the pixel bounding box
+  //   3. Set the SVG viewBox to zoom into that exact bounding box — no re-projection needed.
+
+  const svgSil = document.getElementById('silhouetteSvg');
+  svgSil.innerHTML = '';
+
+  const dStr = pathGenerator(targetFeature);
+  if (!dStr || dStr.length < 10) return silhouetteNext();
+
+  // Bounding box in projected 975×610 space
+  const [[x0, y0], [x1, y1]] = pathGenerator.bounds(targetFeature);
+  const PAD = 20;
+  const vx = x0 - PAD, vy = y0 - PAD;
+  const vw = (x1 - x0) + PAD * 2;
+  const vh = (y1 - y0) + PAD * 2;
+
+  svgSil.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+
+  // Stroke width scaled so it looks consistent regardless of state size
+  const strokeW = Math.max(vw, vh) * 0.012;
+
+  const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  pathEl.setAttribute('d', dStr);
+  pathEl.setAttribute('fill', '#C9A84C');
+  pathEl.setAttribute('stroke', '#0D1B3E');
+  pathEl.setAttribute('stroke-width', String(strokeW));
+  pathEl.setAttribute('stroke-linejoin', 'round');
+  svgSil.appendChild(pathEl);
+
+  // Wrong answers: prefer same region (harder), fall back to any filtered state
+  const sameRegionPool = pool.filter(f => f !== targetFips && STATE_DATA[f].region === targetSd.region);
+  const otherPool      = pool.filter(f => f !== targetFips && STATE_DATA[f].region !== targetSd.region);
+  // Build wrong pool: fill from same-region first, pad with others
+  const wrongPool = [...sameRegionPool, ...otherPool];
+  const wrongPicks = [];
+  const wrongCopy = [...wrongPool];
+  while (wrongPicks.length < 3 && wrongCopy.length > 0) {
+    const idx = Math.floor(Math.random() * wrongCopy.length);
+    wrongPicks.push(wrongCopy.splice(idx, 1)[0]);
+  }
+  // If not enough states in filter, pad with any state
+  const allFips = Object.keys(STATE_DATA);
+  while (wrongPicks.length < 3) {
+    const f = allFips[Math.floor(Math.random() * allFips.length)];
+    if (f !== targetFips && !wrongPicks.includes(f)) wrongPicks.push(f);
+  }
+
+  // Shuffle options
+  const options = [targetFips, ...wrongPicks].sort(() => Math.random() - 0.5);
+
+  const optContainer = document.getElementById('silOptions');
+  optContainer.innerHTML = '';
+  options.forEach(fips => {
+    const sd = STATE_DATA[fips];
+    const btn = document.createElement('button');
+    btn.className = 'sil-opt';
+    btn.textContent = sd.name;
+    btn.dataset.fips = fips;
+    btn.onclick = () => silhouetteAnswer(fips, options, targetFips);
+    optContainer.appendChild(btn);
+  });
+}
+
+function silhouetteAnswer(chosenFips, allOptions, targetFips) {
+  const correct = chosenFips === targetFips;
+
+  // Color all buttons
+  document.querySelectorAll('.sil-opt').forEach(btn => {
+    if (btn.dataset.fips === targetFips) {
+      btn.classList.add(correct && btn.dataset.fips === chosenFips ? 'correct' : 'reveal');
+    } else if (btn.dataset.fips === chosenFips && !correct) {
+      btn.classList.add('wrong');
+    } else {
+      btn.style.opacity = '0.4';
+      btn.style.pointerEvents = 'none';
+    }
+  });
+
+  if (correct) {
+    sil.correct++;
+    sil.streak++;
+  } else {
+    sil.wrong++;
+    sil.streak = 0;
+  }
+
+  document.getElementById('silCorrect').textContent = sil.correct;
+  document.getElementById('silTotal').textContent   = sil.correct + sil.wrong;
+  document.getElementById('silStreak').textContent  = sil.streak;
+
+  const targetSd = STATE_DATA[targetFips];
+  document.getElementById('silNextBtn').style.display = 'inline-block';
+
+  // Show win if on a streak
+  if (sil.correct > 0 && sil.correct % 10 === 0) {
+    setTimeout(() => {
+      document.getElementById('silhouetteOverlay').classList.remove('active');
+      score.correct = sil.correct;
+      score.wrong = sil.wrong;
+      score.streak = sil.streak;
+      updateScore();
+      showWin();
+    }, 1500);
+  }
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+function showTooltip(event, d) {
+  const sd = STATE_DATA[d.id];
+  if (!sd) return;
+  if (!activeRegions.has(sd.region)) return; // don't show tooltip for dimmed states
+  const tip = document.getElementById('tooltip');
+  const mapArea = document.getElementById('mapArea');
+  const rect = mapArea.getBoundingClientRect();
+  const x = event.clientX - rect.left + 12;
+  const y = event.clientY - rect.top - 10;
+
+  // In quiz mode, hide the capital — that's the answer!
+  const hideCapital = (mode === 'quiz' || mode === 'silhouette');
+  tip.innerHTML = `<div class="tt-name">${sd.name}</div>
+                   ${hideCapital ? `<div class="tt-cap" style="color:rgba(245,240,232,0.35);font-style:italic">Capital hidden during quiz</div>` : `<div class="tt-cap">🏛 ${sd.capital}</div>`}
+                   <div class="tt-reg">${sd.region}</div>`;
+
+  const tipW = 160;
+  tip.style.left = Math.min(x, mapArea.clientWidth - tipW - 10) + 'px';
+  tip.style.top  = Math.max(y - 60, 5) + 'px';
+  tip.classList.add('visible');
+}
+function hideTooltip() {
+  document.getElementById('tooltip').classList.remove('visible');
+}
+
+// ── Score ─────────────────────────────────────────────────────────────────────
+function updateScore() {
+  document.getElementById('scoreCorrect').textContent = score.correct;
+  document.getElementById('scoreWrong').textContent   = score.wrong;
+  document.getElementById('streakCount').textContent  = score.streak;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = `feedback-toast ${type || ''} show`;
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── Mode Switching ────────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  ['explorer','quiz','silhouette'].forEach(id => {
+    document.getElementById(`btn-${id}`).classList.toggle('active', id === m);
+  });
+
+  document.getElementById('quizPanel').style.display = (m === 'quiz') ? 'block' : 'none';
+  restoreStateColors();
+
+  if (m === 'quiz') {
+    quiz = { target: null, round: 0 };
+    usedInQuiz.clear();
+    startQuiz();
+  } else if (m === 'silhouette') {
+    sil = { target: null, round: 0, correct: 0, wrong: 0, streak: 0 };
+    startSilhouette();
+  } else {
+    document.getElementById('silhouetteOverlay').classList.remove('active');
+  }
+}
+
+function resetGame() {
+  score = { correct: 0, wrong: 0, streak: 0 };
+  quiz  = { target: null, round: 0 };
+  sil   = { target: null, round: 0, correct: 0, wrong: 0, streak: 0 };
+  usedInQuiz.clear();
+  zoomedRegion = null;
+  activeRegions = new Set(['Northeast','South','Midwest','West']);
+  if (svgEl) {
+    svgEl.select('#zoom-layer').attr('transform', 'translate(0,0) scale(1)');
+    svgEl.selectAll('.state-label').attr('font-size', '8px');
+    svgEl.selectAll('.state-path').style('stroke-width', '0.6px');
+  }
+  updateFilterUI();
+  updateScore();
+  restoreStateColors();
+  document.getElementById('winOverlay').classList.remove('active');
+  document.getElementById('silhouetteOverlay').classList.remove('active');
+  document.getElementById('quizPanel').style.display = 'none';
+  mode = 'explorer';
+  ['explorer','quiz','silhouette'].forEach(id => {
+    document.getElementById(`btn-${id}`).classList.toggle('active', id === 'explorer');
+  });
+  document.getElementById('cardName').textContent = 'Click a state';
+  document.getElementById('cardCapital').innerHTML = '<span>Capital:</span> —';
+  document.getElementById('cardRegionBadge').textContent = '—';
+  document.getElementById('cardFact').textContent = '';
+}
+
+// ── Win Screen ────────────────────────────────────────────────────────────────
+function showWin() {
+  const total = score.correct + score.wrong;
+  const pct = total > 0 ? Math.round((score.correct / total) * 100) : 0;
+  const stars = pct >= 90 ? '⭐⭐⭐' : pct >= 70 ? '⭐⭐' : '⭐';
+
+  document.getElementById('winStars').textContent = stars;
+  document.getElementById('winStats').innerHTML =
+    `Correct: ${score.correct} / ${total}<br>
+     Accuracy: ${pct}%<br>
+     Best Streak: ${score.streak} 🔥`;
+
+  document.getElementById('winOverlay').classList.add('active');
+
+  // Show Etsy banner after delay
+  setTimeout(() => {
+    const banner = document.getElementById('etsyBanner');
+    banner.style.display = 'block';
+  }, 2500);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+initMap().catch(err => {
+  document.getElementById('loadingScreen').innerHTML =
+    `<div style="color:#C9A84C;font-family:var(--sans);text-align:center;padding:20px">
+      <div style="font-size:1.5rem;margin-bottom:8px">⚠️ Map Load Error</div>
+      <div style="font-size:0.8rem;opacity:0.7">Please check your internet connection<br>and reload the page.</div>
+     </div>`;
+});
+</script>
+
+</body>
+</html>

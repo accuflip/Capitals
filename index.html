@@ -27,12 +27,16 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { height: 100%; background: var(–navy); }
+html {
+height: 100%;
+background: var(–navy);
+}
 
 body {
 background: var(–navy);
 color: var(–cream);
 font-family: var(–mono);
+height: 100%;
 min-height: 100vh;
 display: flex;
 flex-direction: column;
@@ -667,9 +671,10 @@ gap: 6px;
 .map-area {
 order: 1;
 width: 100%;
-height: 52vw;
-min-height: 200px;
-max-height: 320px;
+height: 60vw;
+min-height: 220px;
+max-height: 380px;
+flex-shrink: 0;
 border-right: none;
 border-bottom: 1px solid rgba(201,168,76,0.25);
 }
@@ -677,11 +682,13 @@ border-bottom: 1px solid rgba(201,168,76,0.25);
 .sidebar {
 order: 2;
 width: 100%;
+min-height: 140px;
 flex-direction: row;
 flex-wrap: nowrap;
 overflow-x: auto;
 overflow-y: hidden;
 border-right: none;
+background: var(–navy2);
 -webkit-overflow-scrolling: touch;
 scrollbar-width: none;
 }
@@ -1035,10 +1042,11 @@ let activeRegions = new Set(['Northeast','South','Midwest','West']); // filter s
 // ── Region bounding boxes in AlbersUSA 975×610 space ─────────────────────────
 // Computed from Census geometry — padded generously for comfortable zoom
 const REGION_BOUNDS = {
-  Northeast: { x: 760, y: 120, w: 215, h: 230 },  // tight NE cluster
-  South:     { x: 390, y: 370, w: 420, h: 240 },
-  Midwest:   { x: 390, y: 175, w: 330, h: 260 },
-  West:      { x:  20, y:  50, w: 440, h: 480 },
+  // x,y = top-left corner; w,h = dimensions in 975×610 AlbersUSA pixel space
+  Northeast: { x: 755, y: 115, w: 220, h: 240 },
+  South:     { x: 385, y: 360, w: 430, h: 250 },
+  Midwest:   { x: 385, y: 165, w: 340, h: 270 },
+  West:      { x:  15, y:  40, w: 460, h: 500 },
 };
 
 let zoomedRegion = null;  // currently zoomed region name, or null = full view
@@ -1065,28 +1073,38 @@ function zoomToRegion(region) {
   const b = REGION_BOUNDS[region];
   if (!b || !svgEl) return;
 
-  const pad   = 18;
-  const svgW  = 975, svgH = 610;
-  const scaleX = svgW / (b.w + pad * 2);
-  const scaleY = svgH / (b.h + pad * 2);
-  const scale  = Math.min(scaleX, scaleY);
-  const tx = -(b.x - pad) * scale + (svgW - (b.w + pad*2) * scale) / 2;
-  const ty = -(b.y - pad) * scale + (svgH - (b.h + pad*2) * scale) / 2;
+  // The SVG internal space is always 975×610 (AlbersUSA pre-projected).
+  // We zoom by transforming the #zoom-layer inside the SVG viewBox,
+  // so all math stays in that 975×610 coordinate system — no pixel conversion needed.
+  const svgW = 975, svgH = 610;
+  const pad  = 30;  // generous padding so borders aren't clipped
 
-  // Animate the zoom-layer transform
+  // How much of the 975×610 space we want to show
+  const viewW = b.w + pad * 2;
+  const viewH = b.h + pad * 2;
+
+  // Scale so the region fills the SVG viewBox
+  const scale = Math.min(svgW / viewW, svgH / viewH);
+
+  // Translate so the region center aligns with the SVG center
+  const regionCx = b.x + b.w / 2;
+  const regionCy = b.y + b.h / 2;
+  const tx = svgW / 2 - regionCx * scale;
+  const ty = svgH / 2 - regionCy * scale;
+
+  // Animate the zoom-layer transform (stays within SVG coordinate space)
   svgEl.select('#zoom-layer')
     .transition().duration(600).ease(d3.easeCubicInOut)
     .attr('transform', `translate(${tx},${ty}) scale(${scale})`);
 
-  // Scale up labels so they stay legible
+  // Scale labels and strokes to stay legible at zoom level
   svgEl.selectAll('.state-label')
     .transition().duration(600)
     .attr('font-size', `${8 / scale}px`);
 
-  // Scale stroke widths to stay visually consistent
   svgEl.selectAll('.state-path')
     .transition().duration(600)
-    .style('stroke-width', `${0.6 / scale}px`);
+    .style('stroke-width', `${1.0 / scale}px`);
 
   applyRegionFilter();
 }

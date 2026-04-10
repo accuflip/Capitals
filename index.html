@@ -27,6 +27,8 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { height: 100%; background: var(–navy); }
+
 body {
 background: var(–navy);
 color: var(–cream);
@@ -706,6 +708,85 @@ padding: 10px 12px;
 
 .filter-pill { font-size: 0.65rem; padding: 4px 8px; }
 }
+
+/* ── Region Picker Modal ─────────────────────────────────────────── */
+.region-picker {
+display: none;
+position: fixed;
+inset: 0;
+z-index: 200;
+background: rgba(10,22,40,0.97);
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 32px 20px;
+gap: 20px;
+}
+.region-picker.active { display: flex; }
+.region-picker h2 {
+font-family: var(–sans);
+font-size: 1.4rem;
+color: var(–gold2);
+text-align: center;
+letter-spacing: -0.02em;
+}
+.region-picker p {
+font-size: 0.82rem;
+color: rgba(245,240,232,0.5);
+text-align: center;
+}
+.rp-options {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+width: 100%;
+max-width: 380px;
+}
+.rp-btn {
+background: var(–navy2);
+border: 2px solid rgba(201,168,76,0.25);
+border-radius: 12px;
+padding: 18px 12px;
+cursor: pointer;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 8px;
+transition: all 0.15s;
+color: var(–cream);
+font-family: var(–mono);
+}
+.rp-btn:hover, .rp-btn:active {
+border-color: var(–gold);
+background: var(–navy3);
+transform: translateY(-2px);
+}
+.rp-dot {
+width: 22px; height: 22px;
+border-radius: 50%;
+flex-shrink: 0;
+}
+.rp-name {
+font-size: 0.78rem;
+font-weight: 500;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+}
+.rp-count {
+font-size: 0.68rem;
+color: rgba(245,240,232,0.5);
+}
+.rp-all {
+grid-column: 1 / -1;
+background: rgba(201,168,76,0.1);
+border-color: rgba(201,168,76,0.4);
+flex-direction: row;
+justify-content: center;
+gap: 10px;
+padding: 14px 12px;
+}
+.rp-all:hover { background: rgba(201,168,76,0.2); border-color: var(–gold); }
+.rp-all .rp-name { font-size: 0.82rem; color: var(–gold); }
 </style>
 
 </head>
@@ -720,7 +801,7 @@ padding: 10px 12px;
   </div>
   <div class="header-right">
     <button class="mode-btn active" id="btn-explorer"  onclick="setMode('explorer')">🗺 Explorer</button>
-    <button class="mode-btn"        id="btn-quiz"      onclick="setMode('quiz')">🎯 Capital Quiz</button>
+    <button class="mode-btn"        id="btn-quiz"      onclick="showRegionPicker()">🎯 Capital Quiz</button>
     <button class="mode-btn"        id="btn-silhouette" onclick="setMode('silhouette')">👁 Silhouette</button>
     <button class="mode-btn reset-btn" onclick="resetGame()">↺ Reset</button>
   </div>
@@ -1627,7 +1708,55 @@ initMap().catch(err => {
       <div style="font-size:0.8rem;opacity:0.7">Please check your internet connection<br>and reload the page.</div>
      </div>`;
 });
+
+function showRegionPicker() {
+  document.getElementById('regionPicker').classList.add('active');
+}
+
+function startQuizWithRegion(region) {
+  document.getElementById('regionPicker').classList.remove('active');
+  if (region === 'all') {
+    activeRegions = new Set(['Northeast','South','Midwest','West']);
+    zoomedRegion = null;
+    zoomOut();
+  } else {
+    zoomToRegion(region);
+  }
+  setMode('quiz');
+}
 </script>
 
+<!-- Region Picker Modal -->
+
+<div class="region-picker" id="regionPicker">
+  <h2>🎯 Capital Quiz</h2>
+  <p>Choose which region to study</p>
+  <div class="rp-options">
+    <button class="rp-btn rp-all" onclick="startQuizWithRegion('all')">
+      <div class="rp-name">🌎 All 50 States</div>
+      <div class="rp-count">50 states</div>
+    </button>
+    <button class="rp-btn" onclick="startQuizWithRegion('Northeast')">
+      <div class="rp-dot" style="background:#1D4ED8"></div>
+      <div class="rp-name">Northeast</div>
+      <div class="rp-count">9 states</div>
+    </button>
+    <button class="rp-btn" onclick="startQuizWithRegion('South')">
+      <div class="rp-dot" style="background:#92400E"></div>
+      <div class="rp-name">South</div>
+      <div class="rp-count">16 states</div>
+    </button>
+    <button class="rp-btn" onclick="startQuizWithRegion('Midwest')">
+      <div class="rp-dot" style="background:#166534"></div>
+      <div class="rp-name">Midwest</div>
+      <div class="rp-count">12 states</div>
+    </button>
+    <button class="rp-btn" onclick="startQuizWithRegion('West')">
+      <div class="rp-dot" style="background:#5B21B6"></div>
+      <div class="rp-name">West</div>
+      <div class="rp-count">13 states</div>
+    </button>
+  </div>
+</div>
 </body>
 </html>
